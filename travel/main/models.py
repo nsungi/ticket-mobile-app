@@ -2,15 +2,15 @@
 
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
- 
+from django.db.models import Sum
 import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 import uuid
 
-from django.db.models import Sum
-from datetime import datetime, timedelta
 
  
+#Authentication
 
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
@@ -24,25 +24,7 @@ class User(AbstractUser):
 
 
 
-"""
-
-class User(AbstractUser):
-    username = models.CharField(max_length=150, unique=True)
-    phone_number = models.CharField(max_length=20, unique=True)
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['phone_number']
-    objects = CustomUserManager()
-
-    groups = models.ManyToManyField(Group, related_name="custom_user_groups")
-    user_permissions = models.ManyToManyField(Permission, related_name="custom_user_permissions")
-
-    def __str__(self):
-        return self.username
-"""
-
-    
- 
+# Ticket
 
 class Ticket(models.Model):
     GENDER_CHOICES = [
@@ -104,6 +86,7 @@ class Ticket(models.Model):
 
 
 
+#payment
 
 class Payment(models.Model):
     PAYMENT_METHOD_CHOICES = [
@@ -122,6 +105,7 @@ class Payment(models.Model):
 
 
  
+# Ticket
  
 class TicketSalesReport(models.Model):
     TIME_PERIOD_CHOICES = [

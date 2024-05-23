@@ -9,7 +9,7 @@ from django.contrib.auth.password_validation import validate_password
 
 User = get_user_model()
 
-
+#authentication
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,6 +50,7 @@ class LoginSerializer(serializers.Serializer):
 
 
 
+# ticket
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
@@ -90,6 +91,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 
+# making payment
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -117,6 +119,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 
+# generating sales report
 
 class TicketSalesReportSerializer(serializers.ModelSerializer):
     class Meta:

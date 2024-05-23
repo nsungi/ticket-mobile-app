@@ -1,49 +1,28 @@
 
-
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.views import APIView
-from rest_framework import viewsets
-from rest_framework import generics
-from django.utils import timezone
-from .utils import Utils
-import qrcode
-from django.contrib import messages
 from . models import User, Payment, Ticket, TicketSalesReport
-from .serializers import (RegisterSerializer, LoginSerializer, UserSerializer, TicketSalesReportSerializer,
-                          PaymentSerializer, TicketSerializer,  )
-                          
-                          
- 
-   
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, TicketSalesReportSerializer, PaymentSerializer, TicketSerializer
 from io import BytesIO
 from django.core.files.storage import FileSystemStorage
 from reportlab.pdfgen import canvas
-from qrcode import QRCode
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
-
 from .utils import generate_ticket_pdf
-import json
-import os
-import tempfile
-
-  
- 
-  
 from django.http import HttpResponse 
- 
- 
 
+
+
+# authentication
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     
+
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -66,6 +45,7 @@ class LoginView(generics.GenericAPIView):
 
 
 
+# Ticket
 
 class TicketCreateAPIView(generics.CreateAPIView):
     queryset = Ticket.objects.all()
@@ -78,8 +58,6 @@ class TicketListCreateView(ListCreateAPIView):
     serializer_class = TicketSerializer
     
     
-    
-    
 class TicketRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
@@ -87,14 +65,7 @@ class TicketRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
 
  
-
-class PaymentDetailView(generics.RetrieveAPIView):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
-    
-    
-    
-
+# Download ticket    
 class TicketDownloadView(APIView):
     def get(self, request, ticket_id):
         try:
@@ -116,9 +87,8 @@ class TicketDownloadView(APIView):
 
 
 
- 
-  
 
+#making payment
 class PaymentCreateView(CreateAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
@@ -136,10 +106,18 @@ class PaymentCreateView(CreateAPIView):
 
         ticket.pdf_filename = filename
         ticket.save()
+  
 
- 
-# Sales to be seen by any one
 
+
+class PaymentDetailView(generics.RetrieveAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    
+    
+  
+
+# generating sales report
 class TicketSalesReportAPIView(generics.ListAPIView):
     serializer_class = TicketSalesReportSerializer
 
@@ -147,21 +125,3 @@ class TicketSalesReportAPIView(generics.ListAPIView):
         time_period = self.request.query_params.get('time_period', 'daily')
         TicketSalesReport.generate_sales_report(time_period)  # Trigger report generation
         return TicketSalesReport.objects.filter(time_period=time_period)
- 
-
-
-"""
- # sales report be seen by admin uncomment below
-from rest_framework.permissions import IsAdminUser
-
-class TicketSalesReportAPIView(generics.ListAPIView):
-    serializer_class = TicketSalesReportSerializer
-    permission_classes = [IsAdminUser]  # Only allow access to admin users
-
-    def get_queryset(self):
-        time_period = self.request.query_params.get('time_period', 'daily')
-        TicketSalesReport.generate_sales_report(time_period)  # Trigger report generation
-        return TicketSalesReport.objects.filter(time_period=time_period)
-"""
- 
-
