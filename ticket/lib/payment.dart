@@ -27,7 +27,7 @@ class _PaymentPageState extends State<PaymentPage> {
       return;
     }
 
-    final url = 'http://192.168.1.116:8000/main/payments/create/';
+    final url = 'http://192.168.1.115:8000/api/main/payments/create/';
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -43,7 +43,7 @@ class _PaymentPageState extends State<PaymentPage> {
     if (response.statusCode == 201) {
       print('Payment successful.');
       final downloadUrl =
-          'http://192.168.1.116:8000/main/tickets/$ticketId/download/';
+          'http://192.168.1.115:8000/api/main/tickets/$ticketId/download/';
 
       try {
         final Uri _url = Uri.parse(downloadUrl);

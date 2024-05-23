@@ -2,46 +2,51 @@
 
 from rest_framework import serializers
 from .models import User, Payment, Ticket, TicketSalesReport
-from phonenumber_field.serializerfields import PhoneNumberField
 from django.utils import timezone
- 
- 
- 
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(min_length=6, write_only=True)
-    confirm_password = serializers.CharField(min_length=6, write_only=True)
+from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+
+
+User = get_user_model()
+
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'phone_number')
+        
+        
+        
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'phone_number', 'password', 'confirm_password']
+        fields = ('username', 'phone_number', 'password', 'password2')
 
-    def validate(self, data):
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError("Passwords do not match")
-        return data
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        return attrs
 
     def create(self, validated_data):
-        validated_data.pop('confirm_password')
-        return User.objects.create_user(**validated_data)
+        user = User.objects.create(
+            username=validated_data['username'],
+            phone_number=validated_data['phone_number']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
     
     
+    
 
-class UserLoginSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    username = serializers.CharField(max_length=150)
-
-    class Meta:
-        model = User 
-        fields = ['username', 'password']
-
-
-
-
-class UserDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'phone_number']
-
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
 
 
 
@@ -86,7 +91,6 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 
-
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
@@ -108,6 +112,8 @@ class PaymentSerializer(serializers.ModelSerializer):
         ticket = validated_data['ticket']
         validated_data['fare_amount'] = ticket.fare_amount
         return super().create(validated_data)
+
+
 
 
 

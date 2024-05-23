@@ -33,13 +33,13 @@ class BottomBar extends StatelessWidget {
           backgroundColor: Colors.white, // Background color
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.search_rounded), // Search icon
-          label: 'Search',
+          icon: Icon(Icons.schedule), // Search icon
+          label: 'Schedule',
           backgroundColor: Colors.white, // Background color
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person_rounded), // Profile icon
-          label: 'Profile',
+          icon: Icon(Icons.offline_pin_sharp), // Profile icon
+          label: 'Available Offer',
           backgroundColor: Colors.white, // Background color
         ),
       ],

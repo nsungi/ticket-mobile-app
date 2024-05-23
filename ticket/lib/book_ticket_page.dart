@@ -41,7 +41,7 @@ class _BookTicketPageState extends State<BookTicketPage> {
 
   Future<void> _submitTicketBooking() async {
     if (_formKey.currentState!.validate()) {
-      final url = 'http://192.168.1.116:8000/main/tickets/create/';
+      final url = 'http://192.168.1.115:8000/api/main/tickets/create/';
       final passengerName = _passengerNameController.text;
       final phoneNumber = _phoneNumberController.text;
 

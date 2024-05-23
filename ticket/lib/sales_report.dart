@@ -20,36 +20,28 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
 
   Future<void> _fetchSalesData() async {
     final String apiUrl =
-        'http://192.168.1.116:8000/main/ticket-sales/?time_period=$_selectedTimePeriod';
-    final response = await http.get(Uri.parse(apiUrl));
+        'http://192.168.1.115:8000/api/main/sales-reports/?time_period=$_selectedTimePeriod';
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
 
-    if (response.statusCode == 200) {
-      setState(() {
-        _salesData = jsonDecode(response.body);
-        _errorMessage = '';
-      });
-    } else {
+      if (response.statusCode == 200) {
+        setState(() {
+          _salesData = jsonDecode(response.body);
+          _errorMessage = '';
+        });
+      } else {
+        setState(() {
+          _salesData = [];
+          _errorMessage = 'Failed to fetch sales data. Please try again.';
+        });
+        _showErrorDialog(_errorMessage);
+      }
+    } catch (e) {
       setState(() {
         _salesData = [];
-        _errorMessage = 'Failed to fetch sales data. Please try again.';
+        _errorMessage = 'An error occurred. Please try again.';
       });
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text(_errorMessage),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      _showErrorDialog(_errorMessage);
     }
   }
 
@@ -57,9 +49,29 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     if (value != null) {
       setState(() {
         _selectedTimePeriod = value;
+        _fetchSalesData(); // Fetch new data when the time period changes
       });
-      _fetchSalesData();
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -109,7 +121,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                                 Text(
                                     '${item['start_date']} - ${item['end_date']}'),
                               ),
-                              DataCell(Text(item['total_sales'])),
+                              DataCell(Text(item['total_sales'].toString())),
                             ]);
                           }).toList(),
                         ),

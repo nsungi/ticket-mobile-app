@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '10.0.2.2',
     '192.168.1.116',
+    '192.168.1.115',
 ]
 
 # Application definition
@@ -49,10 +50,12 @@ INSTALLED_APPS = [
     
     "phonenumber_field", # phone
     "rest_framework", #API
+    'rest_framework_simplejwt',  # token generation
     "main", #App 
     'corsheaders',
     'django_cron', # generating sales report
-    'rest_framework.authtoken',   # token generation
+    
+    
     
 ]
 
@@ -160,13 +163,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 
+
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-    ],
-    'NON_FIELD_ERRORS_KEY': 'error',
+    ),
 }
+ 
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
@@ -174,3 +177,5 @@ CORS_ALLOWED_ORIGINS = [
     'http://10.0.2.2:8000',
 ]
  
+
+

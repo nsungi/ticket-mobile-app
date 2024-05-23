@@ -5,11 +5,11 @@ import 'check_schedule_page.dart';
 import 'view_offers_page.dart';
 import 'book_ticket_page.dart';
 import 'sales_report.dart';
-import 'sales_history.dart';
 import 'login_screen.dart';
 import 'payment.dart';
 import 'terms.dart';
 import 'about.dart';
+import 'notification.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,26 +21,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Define sales data
-    List<Map<String, dynamic>> salesData = [
-      {
-        'ticket_type': 'First Class Ticket',
-        'date': DateTime(2024, 4, 25),
-        'amount': 500,
-        'quantity': 5,
-      },
-      {
-        'ticket_type': 'Standard Ticket',
-        'date': DateTime(2024, 4, 26),
-        'amount': 300,
-        'quantity': 10,
-      },
-      {
-        'ticket_type': 'Economy Ticket',
-        'date': DateTime(2024, 4, 27),
-        'amount': 200,
-        'quantity': 8,
-      },
-    ];
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -52,7 +32,7 @@ class MyApp extends StatelessWidget {
       //home: ParentPage(), // Change this to AuthenticationScreen(),ParentPage()
       initialRoute: '/',
       routes: {
-        '/': (context) => ParentPage(),
+        '/': (context) => AuthenticationScreen(),
         '/bookTicket': (context) => BookTicketPage(),
         '/checkSchedule': (context) => CheckSchedulePage(),
         '/viewOffers': (context) => ViewOffersPage(),
@@ -60,8 +40,8 @@ class MyApp extends StatelessWidget {
         '/termsAndConditions': (context) => TermsConditionsPage(),
         '/about': (context) => AboutPage(),
         '/salesReport': (context) => SalesReportScreen(),
-        '/salesHistory': (context) => SalesHistoryPage(salesData: salesData),
         '/logout': (context) => LoginScreen(),
+        '/notification': (context) => NotificationPage(),
         '/payment': (context) => PaymentPage(
               bookingData: {},
             ),

@@ -1,9 +1,8 @@
 
 
 from django.contrib.auth.models import AbstractUser, Group, Permission
-from phonenumber_field.modelfields import PhoneNumberField
 from django.db import models
-from .managers import CustomUserManager
+ 
 import datetime
 from django.utils import timezone
 import uuid
@@ -19,6 +18,20 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['phone_number']
+
+    def __str__(self):
+        return self.username
+
+
+
+"""
+
+class User(AbstractUser):
+    username = models.CharField(max_length=150, unique=True)
+    phone_number = models.CharField(max_length=20, unique=True)
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['phone_number']
     objects = CustomUserManager()
 
     groups = models.ManyToManyField(Group, related_name="custom_user_groups")
@@ -26,6 +39,8 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+"""
+
     
  
 
@@ -106,7 +121,8 @@ class Payment(models.Model):
         return f"Payment for Ticket {self.ticket.serial_number} on {self.payment_date}"
 
 
-
+ 
+ 
 class TicketSalesReport(models.Model):
     TIME_PERIOD_CHOICES = [
         ('daily', 'Daily'),
@@ -125,20 +141,19 @@ class TicketSalesReport(models.Model):
         return f"{self.time_period} Sales Report - Class: {self.travel_class}, Route: {self.route}"
 
     @classmethod
-    def generate_sales_report(cls):
+    def generate_sales_report(cls, time_period):
         today = datetime.now().date()
-        if today.day == 1:  # Monthly report
-            start_date = today.replace(day=1)
+        
+        if time_period == 'monthly':
+            start_date = today.replace(day=1) - timedelta(days=1)
+            start_date = start_date.replace(day=1)
             end_date = today
-            time_period = 'monthly'
-        elif today.weekday() == 6:  # Weekly report (assuming Sunday as the end of the week)
-            start_date = today - timedelta(days=today.weekday())
+        elif time_period == 'weekly':
+            start_date = today - timedelta(days=today.weekday() + 7)
             end_date = today
-            time_period = 'weekly'
-        else:  # Daily report
+        else:  # daily
             start_date = today
             end_date = today
-            time_period = 'daily'
 
         sales_reports = []
         for travel_class in Ticket.CLASS_CHOICES:
@@ -162,5 +177,3 @@ class TicketSalesReport(models.Model):
                 sales_reports.append(sales_report)
 
         return sales_reports
-
- 

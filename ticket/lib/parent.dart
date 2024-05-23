@@ -10,12 +10,13 @@ class _ParentPageState extends State<ParentPage> {
   int _currentIndex = 0;
 
   final List<String> _routes = [
-    '/home',
+    '/dashboard',
     '/bookTicket',
+    '/checkSchedule',
+    '/viewOffers',
+    '/salesReport',
     '/about',
     '/termsAndConditions',
-    '/salesReport',
-    '/salesHistory',
     '/logout'
   ];
 
@@ -39,14 +40,15 @@ class _ParentPageState extends State<ParentPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildMenuItem(Icons.home, 'Dashboard', _routes[0]),
+              _buildMenuItem(Icons.description, 'Dashboard', _routes[0]),
               _buildMenuItem(Icons.book, 'Book Now', _routes[1]),
-              _buildMenuItem(Icons.info, 'About', _routes[2]),
+              _buildMenuItem(Icons.schedule, 'Schedule', _routes[2]),
               _buildMenuItem(
-                  Icons.description, 'Terms & Conditions', _routes[3]),
+                  Icons.offline_pin_sharp, 'Available Offer', _routes[3]),
               _buildMenuItem(Icons.bar_chart, 'Sales Report', _routes[4]),
-              _buildMenuItem(Icons.history, 'Sales History', _routes[5]),
-              _buildMenuItem(Icons.logout, 'Logout', _routes[6]),
+              _buildMenuItem(Icons.info, 'About', _routes[5]),
+              _buildMenuItem(Icons.info, 'Terms & Condition', _routes[6]),
+              _buildMenuItem(Icons.logout, 'Logout', _routes[7]),
             ],
           ),
         );
@@ -81,6 +83,8 @@ class _ParentPageState extends State<ParentPage> {
             icon: Icon(Icons.notifications),
             onPressed: () {
               // Add your notification logic here
+              // Navigate to the notification page route
+              Navigator.pushNamed(context, '/notification');
             },
           ),
         ],

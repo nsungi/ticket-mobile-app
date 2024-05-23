@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,17 +11,20 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController usernameController = TextEditingController(); // Updated: changed 'emailController' to 'usernameController'
+  TextEditingController usernameController =
+      TextEditingController(); // Updated: changed 'emailController' to 'usernameController'
   TextEditingController passwordController = TextEditingController();
   bool isPasswordVisible = false;
 
   Future<void> login() async {
-    final String apiUrl = 'http://192.168.1.116:8000/main/login/'; // Updated: API URL if necessary
+    final String apiUrl =
+        'http://192.168.1.115:8000/api/main/login/'; // Updated: API URL if necessary
 
     final response = await http.post(
       Uri.parse(apiUrl),
       body: jsonEncode({
-        'username': usernameController.text, // Updated: changed 'emailController.text' to 'usernameController.text'
+        'username': usernameController
+            .text, // Updated: changed 'emailController.text' to 'usernameController.text'
         'password': passwordController.text,
       }),
       headers: {
@@ -89,7 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     SizedBox(height: 20),
                     TextField(
-                      controller: usernameController, // Updated: changed 'emailController' to 'usernameController'
+                      controller:
+                          usernameController, // Updated: changed 'emailController' to 'usernameController'
                       decoration: InputDecoration(
                         labelText: 'Username',
                         icon: Icon(Icons.person),

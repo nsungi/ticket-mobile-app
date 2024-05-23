@@ -19,7 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _showPassword = false;
 
   Future<void> signUp() async {
-    const String apiUrl = 'http://192.168.1.116:8000/main/register/';
+    const String apiUrl = 'http://192.168.1.115:8000/api/main/register/';
 
     final response = await http.post(
       Uri.parse(apiUrl),

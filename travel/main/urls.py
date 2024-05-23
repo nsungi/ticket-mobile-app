@@ -2,11 +2,6 @@
 
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-
-
- 
-from rest_framework_simplejwt.views import TokenVerifyView
-from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
  
@@ -14,7 +9,7 @@ from .views import (
     TicketSalesReportAPIView,
     PaymentCreateView, PaymentDetailView,
     PaymentCreateView, TicketDownloadView,
-    LoginView,
+     RegisterView, LoginView,
     
 )
 
@@ -25,9 +20,9 @@ router = DefaultRouter()
  
 urlpatterns = [
 
-    path('register/', views.UserRegistrationAPIView.as_view()),
-     
+    path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
+    
 
     path('tickets/create/', views.TicketCreateAPIView.as_view(), name='ticket-create'),
     #path('tickets/', views.TicketCreateAPIView.as_view(), name='ticket_create'), to be removed
@@ -37,10 +32,7 @@ urlpatterns = [
     path('tickets/<int:pk>/', TicketRetrieveUpdateDestroyView.as_view(), name='ticket-retrieve-update-destroy'),
     
 
-    path('user-details/', views.GetUserDetailsAPIView.as_view()),
-    path('verify-token/', TokenVerifyView.as_view()),
-    path('token/refresh/', TokenRefreshView.as_view()),
-    
+      
     
     #payment
     path('payments/create/', PaymentCreateView.as_view(), name='payment-create'),
@@ -51,7 +43,7 @@ urlpatterns = [
     path('tickets/<int:ticket_id>/download/', TicketDownloadView.as_view(), name='ticket-download'),
     
     
-    path('ticket-sales/', TicketSalesReportAPIView.as_view(), name='ticket_sales_report'),
+    path('sales-reports/', TicketSalesReportAPIView.as_view(), name='ticket_sales_report'),
  
 
 ] 
@@ -59,5 +51,3 @@ urlpatterns = [
 urlpatterns += router.urls  # Add router URLs to urlpatterns
 
 
-
-  
