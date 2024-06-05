@@ -70,7 +70,7 @@ class _ParentPageState extends State<ParentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tren E-Ticket System'),
+        title: Text('SGR tren'),
         backgroundColor: Colors.blue,
         leading: IconButton(
           icon: Icon(Icons.menu),
@@ -109,7 +109,7 @@ class _ParentPageState extends State<ParentPage> {
             Text(
               'Welcome to Tren E-Ticket System',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -117,7 +117,7 @@ class _ParentPageState extends State<ParentPage> {
             Text(
               'Explore our services:',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -182,15 +182,15 @@ class _ParentPageState extends State<ParentPage> {
             SizedBox(height: 16),
             _buildFeaturedDestination(
               'assets/images/destination1.jpg',
-              'Mbeya, Dar',
+              'Dar, Moro',
             ),
             _buildFeaturedDestination(
               'assets/images/destination2.jpg',
-              'Dar, Mwanza',
+              'Dar, Charinze',
             ),
             _buildFeaturedDestination(
               'assets/images/destination3.jpg',
-              'Mbeya, Kigoma',
+              'Moro, Dar',
             ),
           ],
         ),

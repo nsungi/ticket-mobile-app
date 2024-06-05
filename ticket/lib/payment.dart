@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'success_page.dart';
 
 class PaymentPage extends StatefulWidget {
   final Map<String, dynamic> bookingData;
@@ -42,42 +42,53 @@ class _PaymentPageState extends State<PaymentPage> {
 
     if (response.statusCode == 201) {
       print('Payment successful.');
-      final downloadUrl =
-          'http://192.168.1.115:8000/api/main/tickets/$ticketId/download/';
-
-      try {
-        final Uri _url = Uri.parse(downloadUrl);
-        if (await canLaunchUrl(_url)) {
-          await launchUrl(_url, mode: LaunchMode.externalApplication);
-          print('Launching URL: $downloadUrl');
-        } else {
-          print('Could not launch URL: $downloadUrl');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to launch the download URL.'),
-              duration: Duration(seconds: 5),
-            ),
-          );
-        }
-      } catch (e) {
-        print('Exception while launching URL: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('An error occurred while launching the URL.'),
-            duration: Duration(seconds: 5),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SuccessPage(
+            paymentSuccess: true,
+            ticketId: ticketId,
           ),
-        );
-      }
+        ),
+      );
     } else {
       print('Payment failed. Please try again.');
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Payment failed. Please try again.'),
-          duration: Duration(seconds: 5),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SuccessPage(
+            paymentSuccess: false,
+            ticketId: '',
+          ),
         ),
       );
+    }
+  }
+
+  Future<void> _cancelTicket() async {
+    final ticketId = widget.bookingData['id']?.toString() ?? '';
+    if (ticketId.isEmpty) {
+      print('Ticket ID is empty.');
+      return;
+    }
+
+    final url = 'http://192.168.1.115:8000/api/main/tickets/$ticketId/cancel/';
+    final response = await http.delete(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 204) {
+      print('Ticket cancellation successful.');
+      Navigator.pop(context); // Navigate back to the previous page
+    } else {
+      print('Ticket cancellation failed.');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
   }
 
@@ -150,6 +161,29 @@ class _PaymentPageState extends State<PaymentPage> {
                     style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.blue),
+                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                        EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      shape: MaterialStateProperty.all<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: _cancelTicket,
+                    child: Text(
+                      'Cancel Ticket',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red),
                       padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                         EdgeInsets.symmetric(vertical: 15),
                       ),

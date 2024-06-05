@@ -7,8 +7,6 @@ import json
 import tempfile
 import os
 
-from django.utils.translation import gettext_lazy as _
-
 class Utils:
     @staticmethod
     def get_tokens_for_user(user):
@@ -20,7 +18,8 @@ class Utils:
 
 def generate_ticket_pdf(ticket):
     qr_code_data = {
-        'travel_date': ticket.travel_date.strftime('%Y-%m-%d'),
+        'serial_number': str(ticket.serial_number),
+        'passenger_phone_number': ticket.passenger_phone_number,
         'payment_method': ticket.payment.payment_method,
         'fare_amount': str(ticket.payment.fare_amount),
         'expiry_date': ticket.expiry_date.strftime('%Y-%m-%d'),

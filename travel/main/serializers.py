@@ -51,12 +51,18 @@ class LoginSerializer(serializers.Serializer):
 
 
 # ticket
+from rest_framework import serializers
+from django.utils import timezone
+from .models import Ticket
 
 class TicketSerializer(serializers.ModelSerializer):
+    seat_number = serializers.CharField()
+    seat_class = serializers.CharField()
+
     class Meta:
         model = Ticket
-        fields = ['id', 'serial_number', 'passenger', 'passenger_phone_number', 'gender', 'fare_amount', 'travel_class', 'seat_number', 'booking_date', 'travel_date', 'expiry_date', 'route']
-        read_only_fields = ['serial_number', 'fare_amount', 'booking_date', 'expiry_date']
+        fields = ['id', 'serial_number', 'passenger', 'passenger_phone_number', 'gender', 'fare_amount', 'travel_class', 'seat_number', 'seat_class', 'booking_date', 'travel_date', 'expiry_date', 'route']
+        read_only_fields = ['serial_number', 'fare_amount', 'booking_date', 'expiry_date', 'seat_number', 'seat_class']
 
     def validate_travel_date(self, value):
         """
@@ -68,13 +74,13 @@ class TicketSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """
-        Ensure that the expiry date is set to travel date + 2 days.
+        Ensure that the expiry date is set to 30 minutes after travel_date.
         Set fare_amount based on travel_class.
         """
         travel_date = data.get('travel_date')
 
         if travel_date:
-            expiry_date = travel_date + timezone.timedelta(days=2)
+            expiry_date = travel_date + timezone.timedelta(minutes=30)
             data['expiry_date'] = expiry_date
 
         travel_class = data.get('travel_class')
@@ -82,12 +88,13 @@ class TicketSerializer(serializers.ModelSerializer):
         if travel_class:
             if travel_class == 'Economy':
                 data['fare_amount'] = 100.00
-            elif travel_class == 'Business':
+            elif travel_class == 'Standard':
                 data['fare_amount'] = 200.00
-            elif travel_class == 'First Class':
+            elif travel_class == 'Business':
                 data['fare_amount'] = 300.00
 
         return data
+
 
 
 

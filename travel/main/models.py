@@ -11,7 +11,7 @@ import uuid
 
  
 #Authentication
-
+ 
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     phone_number = models.CharField(max_length=20, unique=True)
@@ -21,10 +21,22 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
+ 
+ 
 
 
 # Ticket
+
+import uuid
+import base64
+from django.db import models
+from datetime import timedelta
+
+def generate_short_serial():
+    # Generate a UUID and then convert it to a shorter base36 string
+    u = uuid.uuid4()
+    return base64.urlsafe_b64encode(u.bytes).rstrip(b'=').decode('ascii')[:6]
+
 
 class Ticket(models.Model):
     GENDER_CHOICES = [
@@ -34,32 +46,41 @@ class Ticket(models.Model):
 
     CLASS_CHOICES = [
         ('Economy', 'Economy'),
+        ('Standard', 'Standard'),
         ('Business', 'Business'),
-        ('First Class', 'First Class'),
-    ]
-
-    SEAT_CHOICES = [
-        ('A1', 'A1'),
-        ('B2', 'B2'),
-        ('C2', 'C2'),
-        ('D2', 'D2'),
-        ('E2', 'E2'),
     ]
 
     ROUTE_CHOICES = [
-        ('From Mbeya to Kigoma', 'From Mbeya to Kigoma'),
-        ('From Mbeya to Dar', 'From Mbeya to Dar'),
-        ('From Dar to Mwanza', 'From Dar to Mwanza'),
-        ('From Dar to Kigoma', 'From Dar to Kigoma'),
+        ('From Dar to Moro', 'From Dar to Moro'),
+        ('From Dar to Charinze', 'From Dar to Charinze'),
+        ('From Moro to Charinze', 'From Moro to Charinze'),
+        ('From Moro to Dar', 'From Moro to Dar'),
     ]
 
-    serial_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    SEAT_CLASSES = [
+        ('Economy', 'Economy'),
+        ('Standard', 'Standard'),
+        ('Business', 'Business'),
+    ]
+
+    SEAT_NUMBERS = [
+        ('B1', 'B1'), ('B2', 'B2'), ('B3', 'B3'),
+        ('B4', 'B4'), ('B5', 'B5'), ('B6', 'B6'),
+        ('S1', 'S1'), ('S2', 'S2'), ('S3', 'S3'),
+        ('S4', 'S4'), ('S5', 'S5'), ('S6', 'S6'),
+        ('E1', 'E1'), ('E2', 'E2'), ('E3', 'E3'),
+        ('E4', 'E4'), ('E5', 'E5'), ('E6', 'E6'),
+    ]
+
+    serial_number = models.CharField(max_length=12, unique=True, default=generate_short_serial, editable=False)
     passenger = models.CharField(max_length=255)
     passenger_phone_number = models.CharField(max_length=20, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     fare_amount = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
-    travel_class = models.CharField(max_length=20, choices=CLASS_CHOICES)
-    seat_number = models.CharField(max_length=10, choices=SEAT_CHOICES)
+    travel_class = models.CharField(max_length=10, choices=CLASS_CHOICES)
+    seat_number = models.CharField(max_length=5, choices=SEAT_NUMBERS)  # Seat number
+    seat_class = models.CharField(max_length=10, choices=SEAT_CLASSES)  # Seat class
+    is_seat_booked = models.BooleanField(default=False)  # Seat booking status
     booking_date = models.DateField(auto_now_add=True)
     travel_date = models.DateField()
     expiry_date = models.DateField(null=True, blank=True)
@@ -74,15 +95,16 @@ class Ticket(models.Model):
         # Set fare_amount based on travel_class
         if self.travel_class == 'Economy':
             self.fare_amount = 100.00
-        elif self.travel_class == 'Business':
+        elif self.travel_class == 'Standard':
             self.fare_amount = 200.00
-        elif self.travel_class == 'First Class':
+        elif self.travel_class == 'Business':
             self.fare_amount = 300.00
 
-        # Set expiry_date to travel_date + 2 days
-        self.expiry_date = self.travel_date + timedelta(days=2)
+        # Set expiry_date to 30 minutes after travel_date
+        self.expiry_date = self.travel_date + timedelta(minutes=30)
 
         super().save(*args, **kwargs)
+
 
 
 

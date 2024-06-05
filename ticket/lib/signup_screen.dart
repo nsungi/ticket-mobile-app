@@ -27,7 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'username': usernameController.text,
         'phone_number': phoneNumberController.text,
         'password': passwordController.text,
-        'confirm_password': confirmPasswordController.text,
+        'password2': confirmPasswordController.text, // Change to 'password2'
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +44,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
     } else {
       // Handle error
-      print('Failed to sign up');
+      print('Failed to sign up: ${response.statusCode}');
+      print('Response body: ${response.body}');
       // Display an error message to the user or take appropriate action
     }
   }
@@ -158,10 +159,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildInputField(
-      {required TextEditingController controller,
-      required String hintText,
-      required IconData icon}) {
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData icon,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -179,10 +181,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildPasswordField(
-      {required TextEditingController controller,
-      required String hintText,
-      required IconData icon}) {
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData icon,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(

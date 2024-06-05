@@ -42,26 +42,48 @@ class LoginView(generics.GenericAPIView):
             })
         return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
+ 
+
 
 
 
 # Ticket
+from rest_framework import generics
+from .models import Ticket
+from .serializers import TicketSerializer
 
 class TicketCreateAPIView(generics.CreateAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    
 
-
-class TicketListCreateView(ListCreateAPIView):
+class TicketListCreateView(generics.ListCreateAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    
-    
-class TicketRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+
+class TicketRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-        
+
+    def perform_destroy(self, instance):
+        instance.delete()
+
+
+
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Ticket
+
+class TicketCancellationAPIView(generics.DestroyAPIView):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketSerializer
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 
  
@@ -114,6 +136,36 @@ class PaymentDetailView(generics.RetrieveAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     
+
+
+
+
+
+#Ticket validation
+from django.http import JsonResponse
+from .models import Ticket
+from django.utils import timezone
+
+def validate_and_redirect(request):
+    if request.method == 'POST':
+        qr_code_data = request.POST.get('qr_code_data')
+        ticket = Ticket.objects.filter(serial_number=qr_code_data).first()
+        
+        if ticket:
+            if ticket.expiry_date > timezone.now().date():
+                # Ticket is valid
+                return JsonResponse({'status': 'valid', 'message': 'This ticket is valid. Enjoy your journey!'})
+            else:
+                # Ticket has expired
+                return JsonResponse({'status': 'expired', 'message': 'This ticket has expired. Please purchase a new one.'})
+        else:
+            # Ticket not found
+            return JsonResponse({'status': 'invalid', 'message': 'The provided ticket is invalid. Please check and try again.'})
+    
+    # Redirect to some other page if the validation fails
+    return JsonResponse({'status': 'error', 'message': 'An error occurred during validation.'})
+
+
     
   
 
